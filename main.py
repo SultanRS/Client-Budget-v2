@@ -1,7 +1,7 @@
 import tkinter as tk
 import sqlite3
-from controller import Controller
-from view import View
+from classes.controller import Controller
+from classes.view import View
 
 if __name__ == "__main__":
     root = tk.Tk()

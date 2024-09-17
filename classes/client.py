@@ -29,7 +29,7 @@ class Client:
     def get_clients(self):
         """Queries all existing clients"""
         with self.connection:
-            return self.connection.execute("""SELECT * FROM clients""")
+            return self.connection.execute("""SELECT * FROM clients""").fetchall()
 
     def validate_duplicated(self, client_id, client_name):
         """This function returns if there is a client with the same ID and Name."""
