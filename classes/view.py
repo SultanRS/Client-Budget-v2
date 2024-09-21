@@ -38,6 +38,8 @@ class View:
         tk.Label(self.root, text="Categories Administration:").pack(padx=10, pady=10)
         self.button_3 = tk.Button(self.root, text="Create Category", command=self.insert_categoryGUI)
         self.button_3.pack(fill=tk.X, expand=True, padx=10, pady=5)
+        self.button_4 = tk.Button(self.root, text="Update Category", command=self.update_categoryGUI)
+        self.button_4.pack(fill=tk.X, expand=True, padx=10, pady=5)
     
     def insert_clientGUI(self):
         """Client Creation GUI"""
@@ -99,7 +101,7 @@ class View:
         """Category Creation GUI"""
         self.clear_gui()
         self.root.title("Create Category")
-        self.root.geometry("400x450")
+        self.root.geometry("400x470")
 
         tk.Label(self.root, text="Category Name: ").pack(fill=tk.X, expand=True, padx=10, pady=5)
         self.entry_1 = tk.Entry(self.root)
@@ -129,7 +131,44 @@ class View:
         self.entry_5 = tk.Entry(self.root)
         self.entry_5.pack(fill=tk.X, expand=True, padx=10, pady=5)
 
+        self.checkbox_var1 = tk.IntVar()
+        self.checkbox_1 = tk.Checkbutton(self.root, text="Is Downloaded", variable=self.checkbox_var1)
+        self.checkbox_1.pack(fill=tk.X, expand=True, padx=10, pady=5)
+
         self.button_1 = tk.Button(self.root, text="Create", command=self.controller.add_category)
+        self.button_1.pack(fill=tk.X, expand=True, padx=10, pady=5)
+        self.button_2 = tk.Button(self.root, text="Go Back", command=self.main_window)
+        self.button_2.pack(fill=tk.X, expand=True, padx=10, pady=5)
+
+    def update_categoryGUI(self):
+        """Update Category GUI"""
+        self.clear_gui()
+        self.root.title("Create Category")
+        self.root.geometry("500x450")
+
+        list = self.controller.get_categories()
+
+        options = [f"{category[1]}|{category[2]}|{category[3]}|Staff: {category[4]}|Senior: {category[5]}|Manager: {category[6]}|Downloads: {category[7]}" for category in list]
+
+        tk.Label(self.root, text="Select Category to Update: ").pack(fill=tk.X, expand=True, padx=10, pady=5)
+        self.dropdown_1 = ttk.Combobox(self.root, values=options)
+        self.dropdown_1.set("Select an option")
+        self.dropdown_1.pack(fill=tk.X, expand=True, padx=10, pady=5)
+        self.dropdown_1.config(state="readonly")
+
+        options = ["Category", "Category_Type", "Category_Description", "Staff_Hours", "Senior_Hours", "Manager_Hours", "Is_Downloaded"]
+
+        tk.Label(self.root, text="Select field to update:").pack(fill=tk.X, expand=True, padx=10, pady=5)
+        self.dropdown_2 = ttk.Combobox(self.root, values=options)
+        self.dropdown_2.set("Select an option")
+        self.dropdown_2.pack(fill=tk.X, expand=True, padx=10, pady=5)
+        self.dropdown_2.config(state="readonly")
+
+        tk.Label(self.root, text="Enter a value to be updated.").pack(fill=tk.X, expand=True, padx=10, pady=5)
+        self.entry_1 = tk.Entry(self.root)
+        self.entry_1.pack(fill=tk.X, expand=True, padx=10, pady=5)
+
+        self.button_1 = tk.Button(self.root, text="Update", command=self.controller.update_category)
         self.button_1.pack(fill=tk.X, expand=True, padx=10, pady=5)
         self.button_2 = tk.Button(self.root, text="Go Back", command=self.main_window)
         self.button_2.pack(fill=tk.X, expand=True, padx=10, pady=5)

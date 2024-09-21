@@ -13,7 +13,11 @@ class Controller:
     def get_clients(self):
         """Gets the list of clients"""
         return self.client_model.get_clients()
-
+    
+    def get_categories(self):
+        """Gets the list of categories"""
+        return self.category_model.get_categories()
+    
     def add_client(self):
         """Adds a client to the database getting view entries and inserting them into client model"""
         client_id = self.view.entry_1.get()
@@ -49,6 +53,7 @@ class Controller:
         selected_id = self.view.dropdown_1.get()
         selected_field = self.view.dropdown_2.get()
         value = self.view.entry_1.get()
+        
         if selected_id == "Select an option" or selected_field == "Select an option":
             self.view.show_message("ERROR","You must select a value from both dropdown lists.")
         elif not value:
@@ -64,13 +69,43 @@ class Controller:
 
     def add_category(self):
         """Adds a category to the database getting view entries and inserting them into category model"""
-        category, category_type, category_description, staff_hours, senior_hours, manager_hours = self.view.entry_1.get(), self.view.dropdown_1.get(), self.view.entry_2.get(), self.view.entry_3.get(), self.view.entry_4.get(), self.view.entry_5.get()
+        category, category_type, category_description, staff_hours, senior_hours, manager_hours, is_downloaded = self.view.entry_1.get(), self.view.dropdown_1.get(), self.view.entry_2.get(), self.view.entry_3.get(), self.view.entry_4.get(), self.view.entry_5.get(), self.view.checkbox_var1.get()
 
         if not category or not category_description or not staff_hours or not senior_hours or not manager_hours:
             self.view.show_message("ERROR", "You must fill all entries.")
         else:
             try:
-                self.category_model.add_category(category, category_type, category_description, staff_hours, senior_hours, manager_hours)
-                self.view.show_message("INFO", "Category successfully updated.")
+                self.category_model.add_category(category, category_type, category_description, staff_hours, senior_hours, manager_hours, is_downloaded)
+                self.view.show_message("INFO", "Category successfully created.")
             except sqlite3.IntegrityError:
-                self.view.show_message("ERROR", "UNDEFINED ERROR.")
+                self.view.show_message("ERROR", f"Category {category} {category_type} with download status {is_downloaded} already exists.")
+
+    def update_category(self):
+        """Updates a category getting the values from the view and passing them into category model."""
+        selected_id = self.view.dropdown_1.get()
+        selected_field = self.view.dropdown_2.get()
+        value = self.view.entry_1.get()
+
+        if selected_id == "Select an option" or selected_field == "Select an option":
+            self.view.show_message("ERROR","You must select a value from both dropdown lists.")
+        elif not value:
+            self.view.show_message("ERROR","You must input a value to update.")
+        else:
+            category = selected_id.split("|")[0]
+            category_type = selected_id.split("|")[1]
+            is_downloaded = selected_id.split("|")[-1].replace("Downloads: ", "")
+            try:
+                if selected_field in ["Staff_Hours", "Senior_Hours", "Manager_Hours"]:
+                    value = float(value)
+                elif selected_field == "Is_Downloaded":
+                    value = int(value)
+                else:
+                    value = str(value)
+
+                self.category_model.update_category(category, category_type, is_downloaded, selected_field, value)
+                self.view.show_message("INFO", "Category successfully updated.")
+                self.view.update_categoryGUI()
+            except sqlite3.IntegrityError:
+                self.view.show_message("ERROR", "Either you are updating to an existing category or the Is_Downloaded value is different from 0 and 1.")
+            except ValueError:
+                self.view.show_message("ERROR", "Staff Hours, Senior Hours, Manager Hours and Is Downloaded fields must be numeric values.")
